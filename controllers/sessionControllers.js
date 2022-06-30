@@ -1,4 +1,4 @@
-import db from "./../db.js";
+import db from "../db.js";
 import joi from "joi";
 import bcrypt from "bcrypt";
 import { v4 as uuid } from "uuid";
@@ -30,6 +30,7 @@ export async function postSignUp(req, res) {
       name,
       email,
       password: bcrypt.hashSync(password, 10),
+      value: 0,
     };
     await db.collection("users").insertOne(user);
     res.status(201).send("Usuário criado com sucesso");
@@ -55,9 +56,11 @@ export async function postLogin(req, res) {
 
     if (checkSession) return res.status(200).send(checkSession.token);
     const token = uuid();
-    await db
-      .collection("sessions")
-      .insertOne({ userID: user._id, token, date: Date.now() });
+    await db.collection("sessions").insertOne({
+      userID: user._id,
+      token,
+      date: Date.now(),
+    });
     res.status(201).send(token);
   } catch (e) {
     console.log(e);
