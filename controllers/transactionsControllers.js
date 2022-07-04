@@ -7,16 +7,17 @@ export async function postTransactions(req, res) {
   try {
     const userToken = res.locals.userToken;
     const { type } = req.body;
-
+    const description = stripHtml(req.body.description).result.trim();
     const value = Number(stripHtml(req.body.value).result.trim());
     if (value <= 0)
       return res.status(400).send("Envie apenas valores positivos");
     const transactionSchema = joi.object({
       value: joi.number().required(),
+      description: joi.string().required(),
       type: joi.string().valid("deposit", "withdraw").required(),
     });
     const validation = transactionSchema.validate(
-      { value, type },
+      { value, type, description },
       { abortEarly: false }
     );
     if (validation.error) {
@@ -73,7 +74,7 @@ export async function getTransactions(req, res) {
     const user = await db
       .collection("users")
       .findOne({ _id: new ObjectId(userId) });
-    const data = { userTransactions, value: user.value };
+    const data = { userTransactions, value: user.value, name: user.name };
     res.status(200).send(data);
   } catch (e) {
     console.log(e);
@@ -136,10 +137,13 @@ export async function updateTransaction(req, res) {
   const userToken = res.locals.userToken;
   const transactionId = req.params.TransactionId;
   const { type } = req.body;
+  const description = stripHtml(req.body.description).result.trim();
+
   const value = Number(stripHtml(req.body.value).result.trim());
   const transactionSchema = joi.object({
     value: joi.number().required(),
     type: joi.string().valid("deposit", "withdraw").required(),
+    description: joi.string().required(),
   });
   const validation = transactionSchema.validate(
     { value, type },
@@ -176,13 +180,13 @@ export async function updateTransaction(req, res) {
           .collection("users")
           .updateOne(
             { _id: new ObjectId(userId) },
-            { $set: { value: user.value - difference } }
+            { $set: { value: user.value - difference, description } }
           );
         await db
           .collection("transactions")
           .updateOne(
             { _id: new ObjectId(transactionId) },
-            { $set: { value: value } }
+            { $set: { value: value, description } }
           );
       } else {
         const difference = value - transaction.value;
@@ -190,13 +194,13 @@ export async function updateTransaction(req, res) {
           .collection("users")
           .updateOne(
             { _id: new ObjectId(userId) },
-            { $set: { value: user.value + difference } }
+            { $set: { value: user.value + difference, description } }
           );
         await db
           .collection("transactions")
           .updateOne(
             { _id: new ObjectId(transactionId) },
-            { $set: { value: value } }
+            { $set: { value: value, description } }
           );
       }
     } else {
@@ -210,13 +214,13 @@ export async function updateTransaction(req, res) {
           .collection("users")
           .updateOne(
             { _id: new ObjectId(userId) },
-            { $set: { value: user.value - difference } }
+            { $set: { value: user.value - difference, description } }
           );
         await db
           .collection("transactions")
           .updateOne(
             { _id: new ObjectId(transactionId) },
-            { $set: { value: value } }
+            { $set: { value: value, description } }
           );
       } else {
         const difference = transaction.value - value;
@@ -224,13 +228,13 @@ export async function updateTransaction(req, res) {
           .collection("users")
           .updateOne(
             { _id: new ObjectId(userId) },
-            { $set: { value: user.value + difference } }
+            { $set: { value: user.value + difference, description } }
           );
         await db
           .collection("transactions")
           .updateOne(
             { _id: new ObjectId(transactionId) },
-            { $set: { value: value } }
+            { $set: { value: value, description } }
           );
       }
     }
