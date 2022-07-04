@@ -1,6 +1,6 @@
 import db from "../db.js";
 import bcrypt from "bcrypt";
-
+//t
 async function validateLogin(req, res, next) {
   try {
     const { email, password } = req.body;
