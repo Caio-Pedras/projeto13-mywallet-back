@@ -9,6 +9,8 @@ export async function postTransactions(req, res) {
     const { type } = req.body;
 
     const value = Number(stripHtml(req.body.value).result.trim());
+    if (value <= 0)
+      return res.status(400).send("Envie apenas valores positivos");
     const transactionSchema = joi.object({
       value: joi.number().required(),
       type: joi.string().valid("deposit", "withdraw").required(),
