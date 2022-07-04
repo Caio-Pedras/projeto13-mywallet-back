@@ -147,7 +147,7 @@ export async function updateTransaction(req, res) {
     description: joi.string().required(),
   });
   const validation = transactionSchema.validate(
-    { value, type },
+    { value, type, description },
     { abortEarly: false }
   );
   if (validation.error) {
