@@ -52,6 +52,7 @@ export async function postTransactions(req, res) {
     const transaction = {
       value,
       type,
+      description,
       userId,
       date: dayjs().format("DD/MM/YY"),
     };
