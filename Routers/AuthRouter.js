@@ -4,8 +4,8 @@ import {
   postSignUp,
   logout,
 } from "../controllers/authControllers.js";
-import validateSignUp from "../middlewares/validateSignUp.js";
-import validateLogin from "../middlewares/validateLogin.js";
+import validateSignUp from "../Middlewares/validateSignUp.js";
+import validateLogin from "../Middlewares/validateLogin.js";
 const authRouter = Router();
 
 authRouter.post("/signup", validateSignUp, postSignUp);
