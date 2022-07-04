@@ -158,7 +158,7 @@ export async function updateTransaction(req, res) {
   try {
     const transaction = await db
       .collection("transactions")
-      .findOne({ _id: new ObjectId(transactionId) });
+      .findOne({ _id: transactionId });
     if (!transaction)
       return res.status(404).send("não foi possiver encontrar essa transação");
     if (transaction.type !== type)
