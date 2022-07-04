@@ -5,7 +5,7 @@ import {
   postTransactions,
   updateTransaction,
 } from "../controllers/transactionsControllers.js";
-import validateUser from "../Middlewares/validateUser.js";
+import validateUser from "../middlewares/validateUser.js";
 
 const transactionRouter = Router();
 transactionRouter.use(validateUser);
