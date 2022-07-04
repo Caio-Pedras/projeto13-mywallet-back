@@ -1,4 +1,5 @@
 import joi from "joi";
+import db from "../db.js";
 import bcrypt from "bcrypt";
 async function validateSignUp(req, res, next) {
   try {
@@ -24,6 +25,8 @@ async function validateSignUp(req, res, next) {
       res.status(422).send(validation.error);
       return;
     }
+    const checkEmail = await db.collection("users").findOne({ email });
+    if (checkEmail) return res.status(400).send("Email já cadastrado");
     const user = {
       name,
       email,
