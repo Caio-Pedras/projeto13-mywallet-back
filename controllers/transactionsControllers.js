@@ -5,9 +5,7 @@ import { ObjectId } from "mongodb";
 import { stripHtml } from "string-strip-html";
 export async function postTransactions(req, res) {
   try {
-    const { authorization } = req.headers;
-    const token = authorization?.replace("Bearer ", "");
-    if (!token) return res.status(404).send("usuário não encontrado");
+    const userToken = res.locals.userToken;
     const { type } = req.body;
 
     const value = Number(stripHtml(req.body.value).result.trim());
@@ -24,10 +22,6 @@ export async function postTransactions(req, res) {
       return;
     }
 
-    const userToken = await db.collection("sessions").findOne({ token });
-    if (!userToken) {
-      return res.status(422).send("Usuário não econtrado");
-    }
     const userId = userToken.userID;
     const user = await db
       .collection("users")
@@ -67,11 +61,7 @@ export async function postTransactions(req, res) {
 }
 export async function getTransactions(req, res) {
   try {
-    const { authorization } = req.headers;
-    const token = authorization?.replace("Bearer ", "");
-    if (!token) return res.status(404).send("usuário não encontrado");
-    const userToken = await db.collection("sessions").findOne({ token });
-    if (!userToken) return res.status(422).send("Usuário não econtrado");
+    const userToken = res.locals.userToken;
 
     const userTransactions = await db
       .collection("transactions")
@@ -90,11 +80,7 @@ export async function getTransactions(req, res) {
 }
 
 export async function deleteTransaction(req, res) {
-  const { authorization } = req.headers;
-  const token = authorization?.replace("Bearer ", "");
-  if (!token) return res.status(401).send("não autorizado");
-  const userToken = await db.collection("sessions").findOne({ token });
-  if (!userToken) return res.status(422).send("Usuário não econtrado");
+  const userToken = res.locals.userToken;
 
   const transactionId = req.params.TransactionId;
   try {
@@ -145,11 +131,7 @@ export async function deleteTransaction(req, res) {
 }
 
 export async function updateTransaction(req, res) {
-  const { authorization } = req.headers;
-  const token = authorization?.replace("Bearer ", "");
-  if (!token) return res.status(401).send("não autorizado");
-  const userToken = await db.collection("sessions").findOne({ token });
-  if (!userToken) return res.status(422).send("Usuário não econtrado");
+  const userToken = res.locals.userToken;
   const transactionId = req.params.TransactionId;
   const { type } = req.body;
   const value = Number(stripHtml(req.body.value).result.trim());
