@@ -242,6 +242,6 @@ export async function updateTransaction(req, res) {
     res.sendStatus(204);
   } catch (e) {
     console.log(e);
-    res.satus(500).send(e);
+    res.status(500).send(e);
   }
 }
